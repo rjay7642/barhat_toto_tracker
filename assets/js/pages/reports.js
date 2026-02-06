@@ -61,9 +61,11 @@ function fillTotoSelect(){
 
   const sel1 = document.getElementById("deleteTotoSelect");
   const sel2 = document.getElementById("deleteExpenseToto");
+  const sel3 = document.getElementById("exportTotoSelect");
 
   sel1.innerHTML = "";
   sel2.innerHTML = "";
+  sel3.innerHTML = "";
 
   for(const t of totos){
 
@@ -76,8 +78,14 @@ function fillTotoSelect(){
     o2.value = t.id;
     o2.textContent = t.name;
     sel2.appendChild(o2);
+
+    const o3 = document.createElement("option");
+    o3.value = t.id;
+    o3.textContent = t.name;
+    sel3.appendChild(o3);
   }
 }
+
 
 /* ---------------- summary ---------------- */
 
@@ -202,46 +210,55 @@ async function exportPDF(){
   const month = document.getElementById("monthPicker").value;
   if(!month) return alert("Select month");
 
+  const selectedTotoId =
+    document.getElementById("exportTotoSelect").value;
+
+  if(!selectedTotoId){
+    alert("Select toto for PDF");
+    return;
+  }
+
+  const t = totos.find(x => x.id === selectedTotoId);
+  if(!t){
+    alert("Invalid toto");
+    return;
+  }
+
+  const att = await getAttendanceByMonth(t.id, month);
+  const exp = await getExpensesByMonth(t.id, month);
+
+  const dates = new Set([
+    ...att.map(a=>a.date),
+    ...exp.map(e=>e.date)
+  ]);
+
   let rows = "";
 
-  for(const t of totos){
+  const sorted = Array.from(dates).sort();
 
-    const att = await getAttendanceByMonth(t.id, month);
-    const exp = await getExpensesByMonth(t.id, month);
+  for(const d of sorted){
 
-    const dates = new Set([
-      ...att.map(a=>a.date),
-      ...exp.map(e=>e.date)
-    ]);
+    const ran = att.find(a=>a.date===d && a.present);
+    const dayExp = exp.filter(e=>e.date===d);
 
-    const sorted = Array.from(dates).sort();
+    if(!ran && !dayExp.length) continue;
 
-    for(const d of sorted){
+    const paidSum = dayExp
+      .filter(e=>e.paid)
+      .reduce((s,e)=>s+Number(e.amount||0),0);
 
-      const ran = att.find(a=>a.date===d && a.present);
+    const unpaidSum = dayExp
+      .filter(e=>!e.paid)
+      .reduce((s,e)=>s+Number(e.amount||0),0);
 
-      const dayExp = exp.filter(e=>e.date===d);
-
-      if(!ran && !dayExp.length) continue;
-
-      const paidSum = dayExp
-        .filter(e=>e.paid)
-        .reduce((s,e)=>s+Number(e.amount||0),0);
-
-      const unpaidSum = dayExp
-        .filter(e=>!e.paid)
-        .reduce((s,e)=>s+Number(e.amount||0),0);
-
-      rows += `
-        <tr>
-          <td>${t.name}</td>
-          <td>${d}</td>
-          <td style="text-align:center">${ran ? "Yes" : "No"}</td>
-          <td style="text-align:right">₹${paidSum.toLocaleString("en-IN")}</td>
-          <td style="text-align:right">₹${unpaidSum.toLocaleString("en-IN")}</td>
-        </tr>
-      `;
-    }
+    rows += `
+      <tr>
+        <td>${d}</td>
+        <td style="text-align:center">${ran ? "Yes" : "No"}</td>
+        <td style="text-align:right">₹${paidSum.toLocaleString("en-IN")}</td>
+        <td style="text-align:right">₹${unpaidSum.toLocaleString("en-IN")}</td>
+      </tr>
+    `;
   }
 
   const html = `
@@ -249,7 +266,7 @@ async function exportPDF(){
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Toto Daily Invoice</title>
+<title>Toto Invoice</title>
 <style>
 body{font-family:Arial;padding:25px;color:#111}
 .header{
@@ -271,8 +288,9 @@ th{background:#f3f4f6}
 <body>
 
 <div class="header">
-  <div class="brand">Toto Manager – Daily Invoice</div>
+  <div class="brand">Toto Manager – Invoice</div>
   <div class="meta">
+    Toto : ${t.name}<br>
     Month: ${month}<br>
     Generated: ${new Date().toLocaleString()}
   </div>
@@ -281,7 +299,6 @@ th{background:#f3f4f6}
 <table>
   <thead>
     <tr>
-      <th>Toto</th>
       <th>Date</th>
       <th>Ran</th>
       <th>Paid</th>
@@ -306,78 +323,4 @@ th{background:#f3f4f6}
   w.document.close();
   w.focus();
   w.print();
-}
-
-/* ---------------- admin delete ---------------- */
-
-async function deleteDay(){
-
-  const d = document.getElementById("deleteDate").value;
-  if(!d) return alert("Select date");
-
-  if(!confirm("Delete all history of this date?")) return;
-
-  await deleteHistoryByDate(d);
-  alert("Deleted");
-
-  loadSummary();
-}
-
-async function deleteExpensesByToto(){
-
-  const totoId =
-    document.getElementById("deleteExpenseToto").value;
-
-  const date =
-    document.getElementById("deleteExpenseDate").value;
-
-  if(!totoId){
-    alert("Select toto");
-    return;
-  }
-
-  if(!date){
-    alert("Select date");
-    return;
-  }
-
-  if(!confirm("Delete expenses of this toto for selected date?"))
-    return;
-
-  const all = await getAll(STORES.expenses);
-
-  const targets = all.filter(e =>
-    e.totoId === totoId && e.date === date
-  );
-
-  if(!targets.length){
-    alert("No expenses found for this toto on this date");
-    return;
-  }
-
-  for(const ex of targets){
-    await deleteById(STORES.expenses, ex.id);
-  }
-
-  alert("Selected expenses deleted");
-
-  loadSummary();
-}
-async function deleteToto(){
-
-  const id = document.getElementById("deleteTotoSelect").value;
-  if(!id){
-    alert("Select toto");
-    return;
-  }
-
-  if(!confirm("Delete this toto and all its data?")) return;
-
-  await deleteTotoCompletely(id);
-
-  totos = await getAll(STORES.totos);
-  fillTotoSelect();
-  loadSummary();
-
-  alert("Toto deleted");
 }

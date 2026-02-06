@@ -106,13 +106,23 @@ button{
   </div>
 
   <!-- Export -->
-  <div class="card">
-    <h3>Export</h3>
-    <div class="row">
-      <button type="button" class="primary" id="csvBtn">Export CSV</button>
-      <button type="button" class="primary" id="pdfBtn">Export PDF</button>
-    </div>
+ <div class="card">
+  <h3>Export (Toto wise PDF)</h3>
+
+  <div style="margin-bottom:10px;">
+    <select id="exportTotoSelect"></select>
   </div>
+
+  <div class="row">
+    <button type="button" class="primary" id="csvBtn">Export CSV</button>
+    <button type="button" class="primary" id="pdfBtn">Export PDF</button>
+  </div>
+
+  <div class="muted" style="margin-top:6px;">
+    PDF will be generated only for selected toto
+  </div>
+</div>
+
 
   <!-- Delete by date -->
   <div class="card">
