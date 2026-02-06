@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Reports & Admin – Toto Manager</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="../assets/css/style.css">
+
+<style>
+body{
+  margin:0;
+  background:#0f172a;
+  color:#e5e7eb;
+  font-family:system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+header{
+  padding:14px 16px;
+  border-bottom:1px solid #1f2933;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+header h1{
+  font-size:15px;
+  margin:0;
+  font-weight:600;
+}
+header a{
+  color:#9ca3af;
+  text-decoration:none;
+  font-size:13px;
+}
+.container{
+  max-width:760px;
+  margin:auto;
+  padding:14px;
+}
+.card{
+  background:#111827;
+  border-radius:14px;
+  padding:14px;
+  margin-bottom:14px;
+}
+h3{
+  font-size:13px;
+  margin:0 0 10px;
+  color:#9ca3af;
+  font-weight:500;
+}
+.row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+input,select{
+  width:100%;
+  background:#0b1220;
+  border:1px solid #1f2933;
+  border-radius:8px;
+  padding:10px;
+  color:#e5e7eb;
+  font-size:13px;
+}
+button{
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+}
+.primary{ background:#38bdf8; color:#022c22; }
+.danger{ background:#ef4444; color:white; }
+
+.list{
+  display:grid;
+  gap:10px;
+}
+.item{
+  background:#0b1220;
+  padding:12px;
+  border-radius:10px;
+  display:flex;
+  justify-content:space-between;
+  font-size:13px;
+}
+.muted{color:#9ca3af;font-size:12px;}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>Reports & Admin</h1>
+  <a href="../index.html">Home</a>
+</header>
+
+<main class="container">
+
+  <!-- Monthly summary -->
+  <div class="card">
+    <h3>Monthly summary</h3>
+    <input type="month" id="monthPicker">
+    <div class="list" id="summaryList" style="margin-top:10px;"></div>
+  </div>
+
+  <!-- Export -->
+  <div class="card">
+    <h3>Export</h3>
+    <div class="row">
+      <button type="button" class="primary" id="csvBtn">Export CSV</button>
+      <button type="button" class="primary" id="pdfBtn">Export PDF</button>
+    </div>
+  </div>
+
+  <!-- Delete by date -->
+  <div class="card">
+    <h3>Delete full day history</h3>
+    <div class="row">
+      <input type="date" id="deleteDate">
+      <button type="button" class="danger" id="deleteDateBtn">Delete Day</button>
+    </div>
+    <div class="muted" style="margin-top:6px;">
+      Deletes attendance + trips + expenses of that date
+    </div>
+  </div>
+
+  <!-- Delete toto -->
+  <div class="card">
+    <h3>Delete Toto Completely</h3>
+    <div class="row">
+      <select id="deleteTotoSelect"></select>
+      <button type="button" class="danger" id="deleteTotoBtn">Delete Toto</button>
+    </div>
+    <div class="muted" style="margin-top:6px;">
+      Toto + all its history will be removed
+    </div>
+  </div>
+
+  <!-- Delete expenses by toto -->
+  <!-- Delete expenses by toto & date -->
+<div class="card">
+  <h3>Delete Expenses (Toto + Date)</h3>
+
+  <div class="row">
+    <select id="deleteExpenseToto"></select>
+    <input type="date" id="deleteExpenseDate">
+  </div>
+
+  <button
+    type="button"
+    class="danger"
+    id="deleteExpenseBtn"
+    style="margin-top:10px;width:100%;"
+  >
+    Delete Selected Expenses
+  </button>
+
+  <div class="muted" style="margin-top:6px;">
+    Only expenses of selected toto and selected date will be deleted
+  </div>
+</div>
+
+</main>
+
+<script type="module" src="../assets/js/pages/reports.js"></script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Attendance – Toto Manager</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="../assets/css/style.css">
+
+<style>
+body{
+  margin:0;
+  background:#0f172a;
+  color:#e5e7eb;
+  font-family:system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+header{
+  padding:14px 16px;
+  border-bottom:1px solid #1f2933;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+header h1{
+  font-size:15px;
+  margin:0;
+  font-weight:600;
+}
+
+header a{
+  color:#9ca3af;
+  text-decoration:none;
+  font-size:13px;
+}
+
+.container{
+  max-width:720px;
+  margin:auto;
+  padding:14px;
+}
+
+.note{
+  font-size:12px;
+  color:#9ca3af;
+  margin-bottom:10px;
+}
+
+.list{
+  display:grid;
+  gap:12px;
+}
+
+.card{
+  background:#111827;
+  border-radius:14px;
+  padding:14px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.name{
+  font-size:15px;
+  font-weight:600;
+}
+
+.status{
+  font-size:12px;
+  color:#9ca3af;
+  margin-top:4px;
+}
+
+.actions{
+  display:flex;
+  gap:8px;
+}
+
+button{
+  border:none;
+  padding:8px 12px;
+  border-radius:8px;
+  font-size:12px;
+  cursor:pointer;
+}
+
+.present{
+  background:#22c55e;
+  color:#022c22;
+}
+
+.absent{
+  background:#1f2933;
+  color:#9ca3af;
+}
+
+.done{
+  background:#0b1220;
+  color:#6b7280;
+  cursor:default;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>Today Attendance</h1>
+  <a href="../index.html">Home</a>
+</header>
+
+<main class="container">
+
+  <div class="note">
+    Mark each Toto for today. Once marked, it will not be changed here.
+  </div>
+
+  <div class="list" id="attendanceList"></div>
+
+</main>
+
+<script type="module" src="../assets/js/pages/attendance.js"></script>
+</body>
+</html>
